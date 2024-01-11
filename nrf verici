@@ -1,0 +1,26 @@
+#include <SPI.h>
+#include <nRF24L01.h>
+#include <RF24.h>
+
+RF24 radio(9, 10); // CE, CSN
+
+const uint64_t pipe = 0xE8E8F0F0E1LL; // Alıcı ile aynı olmalı
+
+int buttonPin = 2; // Buton bağlı olduğu pin
+bool buttonState;
+
+void setup() {
+  pinMode(buttonPin, INPUT);
+  radio.begin();
+  radio.openWritingPipe(pipe);
+}
+
+void loop() {
+  buttonState = digitalRead(buttonPin);
+  
+  if (buttonState == HIGH) {
+    const char text[] = "LED_YAK"; // Alıcıya gönderilecek mesaj
+    radio.write(&text, sizeof(text));
+    delay(1000); // Tek seferde bir mesaj gönder
+  }
+}
